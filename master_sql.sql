@@ -72,7 +72,7 @@ CREATE TABLE labor(
 	FOREIGN KEY (service_id) REFERENCES  services (service_id)
 );
 
---create customers function
+--FILL CUSTOMERS TABLE VIA FUNCTION
 CREATE OR REPLACE FUNCTION add_customer (_first_name VARCHAR, _last_name VARCHAR, _birth_date DATE, _email VARCHAR)
 RETURNS void
 AS $$
@@ -89,7 +89,24 @@ SELECT add_customer('Felicity','Dineen','10/22/1986','felicitycdineen@gmail.com'
 SELECT add_customer('Tim','Dineen','8/27/1950','tpdineen@email.com');
 SELECT add_customer('Jill','Dineen','10/1/1953','tjdineen71@email.com');
 
---add values to mechanics/line by line
+--FILL SALESPERSON TABLE VIA FUNCTION
+CREATE OR REPLACE FUNCTION add_salesperson (_first_name VARCHAR, _last_name VARCHAR, _hire_date DATE)
+RETURNS void
+AS $$
+
+BEGIN
+	INSERT INTO salesperson(first_name,last_name,hire_date)
+	VALUES(_first_name,_last_name,_hire_date);
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT add_salesperson('Jeff','Sellerman','3/6/2017');
+SELECT add_salesperson('Ryne','Dursa','4/12/2013');
+SELECT add_salesperson('Dru','Tomisam','6/1/2015')
+SELECT add_salesperson('Evin','Mackewich','8/19/2020')
+
+--FILL MECHANIC VALUES
 INSERT INTO mechanic(
 	first_name,
 	last_name,
@@ -114,59 +131,7 @@ INSERT INTO mechanic(
 	'7/4/2017'
 );
 
---create salesperson with function
-CREATE OR REPLACE FUNCTION add_salesperson (_first_name VARCHAR, _last_name VARCHAR, _hire_date DATE)
-RETURNS void
-AS $$
-
-BEGIN
-	INSERT INTO salesperson(first_name,last_name,hire_date)
-	VALUES(_first_name,_last_name,_hire_date);
-END;
-$$
-LANGUAGE plpgsql;
-
-SELECT add_salesperson('Jeff','Sellerman','3/6/2017');
-SELECT add_salesperson('Ryne','Dursa','4/12/2013');
-SELECT add_salesperson('Dru','Tomisam','6/1/2015')
-SELECT add_salesperson('Evin','Mackewich','8/19/2020')
-
---create servies function
-CREATE OR REPLACE FUNCTION create_services(_service_name VARCHAR)
-RETURNS void
-AS $$
-
-BEGIN
-	INSERT INTO services(service_name)
-	VALUES(_service_name);
-END;
-$$
-LANGUAGE plpgsql;
-
-SELECT create_services('Oil Change');
-SELECT create_services('Tire Rotation');
-SELECT create_services('Alignment');
-SELECT create_services('Head Gasket Replacement');
-SELECT create_services('Spark Plug Change');
-SELECT create_services('Ball Joint Replacement');
-SELECT create_services('Transmission Fluid Change');
-SELECT create_services('Rebuild Motor');
-
---create sales invoices line by line
-INSERT INTO sale_invoice(
-	date_sold,
-	amount,
-	msrp,
-	customer_id,
-	vin_id
-)VALUES(
-	'1/2/2021',
-	27824.87,
-	32995.00,
-	1,
-	1
-);
-
+--FILL CARS
 INSERT INTO car(
 	color,
 	make,
@@ -213,8 +178,40 @@ INSERT INTO car(
 	'Forte',
 	2010
 )
+--FILL SALES INVOICES
+INSERT INTO sale_invoice(
+	date_sold,
+	amount,
+	msrp,
+	customer_id,
+	vin_id
+)VALUES(
+	'1/2/2021',
+	27824.87,
+	32995.00,
+	1,
+	1
+),(
+	'5/17/2007',
+	17834.65,
+	20995,
+	2,
+	4
+),(
+	'11/4/2020',
+	25224.95,
+	578995.95,
+	3,
+	8
+),(
+	'3/6/2020',
+	57321.00,
+	45995.95,
+	4,
+	9
+);
 
---create parts function
+--FILL PARTS VIA FUNCTION
 CREATE OR REPLACE FUNCTION add_parts(_part_name VARCHAR,_part_cost NUMERIC,_part_quantity INTEGER)
 RETURNS void
 AS $$
@@ -235,7 +232,46 @@ SELECT add_parts('Ball Joint',28.94,27);
 SELECT add_parts('Tie Rod',172.12,7);
 SELECT add_parts('Aux Port',8.73,46);
 
---fill labor table line by line
+--CREATE SERVICES VIA FUNCTION
+CREATE OR REPLACE FUNCTION create_services(_service_name VARCHAR)
+RETURNS void
+AS $$
+
+BEGIN
+	INSERT INTO services(service_name)
+	VALUES(_service_name);
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT create_services('Oil Change');
+SELECT create_services('Tire Rotation');
+SELECT create_services('Alignment');
+SELECT create_services('Head Gasket Replacement');
+SELECT create_services('Spark Plug Change');
+SELECT create_services('Ball Joint Replacement');
+SELECT create_services('Transmission Fluid Change');
+SELECT create_services('Rebuild Motor');
+
+--FILL SALESPERSON_INVOICE
+INSERT INTO salesperson_invoice(
+	salesperson_id,
+	invoice_num
+)VALUES(
+	1,
+	2
+),(
+	2,
+	3
+),(
+	3,
+	4
+),(
+	4,
+	5
+)
+
+--FILL LABOR
 INSERT INTO labor(
 	invoice_id,
 	mechanic_id,
@@ -261,49 +297,4 @@ INSERT INTO labor(
 	3,
 	8,
 	2499.99
-)
-
---create sales invoice line by line
-INSERT INTO sale_invoice(
-	date_sold,
-	amount,
-	msrp,
-	customer_id,
-	vin_id
-)VALUES(
-	'5/17/2007',
-	17834.65,
-	20995,
-	2,
-	4
-),(
-	'11/4/2020',
-	25224.95,
-	578995.95,
-	3,
-	8
-),(
-	'3/6/2020',
-	57321.00,
-	45995.95,
-	4,
-	9
-)
-
---fill salesperson invoice table
-INSERT INTO salesperson_invoice(
-	salesperson_id,
-	invoice_num
-)VALUES(
-	1,
-	2
-),(
-	2,
-	3
-),(
-	3,
-	4
-),(
-	4,
-	5
 )
